@@ -38,4 +38,12 @@ public class Task {
     public String getTitle() {
         return title;
     }
+
+    public String getId(){
+        return id;
+    }
+
+    public Set<String> getTags() {
+        return tags;
+    }
 }

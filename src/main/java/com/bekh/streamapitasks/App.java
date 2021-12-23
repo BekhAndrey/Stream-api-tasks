@@ -23,6 +23,17 @@ public class App {
         Task task5 = new Task("5", "Read Domain Driven Design book", TaskType.READING, LocalDate.of(2015, Month.JULY, 2)).addTag("ddd").addTag("books").addTag("reading");
         List<Task> tasks = Arrays.asList(task1, task2, task3, task4, task5);
         System.out.println(getFirstFiveReadingTasks(tasks));
+
+        List<TaskDto> taskDtos = convertToTaskDtoList(tasks);
+    }
+
+    public static List<TaskDto> convertToTaskDtoList(List<Task> tasks) {
+        return tasks
+                .stream().map(t -> {
+                    TaskDto taskDto = new TaskDto(t.getId(), t.getTitle(), t.getType(), t.getCreatedOn());
+                    taskDto.setTags(t.getTags());
+                    return taskDto;
+                }).collect(Collectors.toList());
     }
 
     public static String getFirstFiveReadingTasks(List<Task> tasks) {
