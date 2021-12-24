@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
+@Data
 public class Student {
 
     Map<String, Integer> rating;
@@ -18,13 +19,5 @@ public class Student {
     public Student rate(String subject, Integer rate){
         rating.put(subject, rate);
         return this;
-    }
-
-    public Map<String, Integer> getRating() {
-        return rating;
-    }
-
-    public String getName() {
-        return name;
     }
 }
