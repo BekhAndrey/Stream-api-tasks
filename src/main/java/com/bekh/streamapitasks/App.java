@@ -3,6 +3,7 @@ package com.bekh.streamapitasks;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,6 +26,19 @@ public class App {
         System.out.println(getFirstFiveReadingTasks(tasks));
 
         List<TaskDto> taskDtos = convertToTaskDtoList(tasks);
+
+        System.out.println(findMostCommonChar("p1p1p1p"));
+    }
+
+    public static String findMostCommonChar(String word) {
+        return word.chars()
+                .mapToObj(c -> (char) c)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(entry -> "[" + entry.getKey().toString() + "," + entry.getValue().toString() + "]")
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     public static List<TaskDto> convertToTaskDtoList(List<Task> tasks) {
