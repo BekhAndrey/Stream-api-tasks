@@ -3,13 +3,19 @@ package com.bekh.streamapitasks;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-/**
- * Hello world!
- */
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
+import static java.util.function.Function.identity;
+import static java.util.Map.Entry.comparingByValue;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
+
+
 public class App {
     public static void main(String[] args) {
         List<Student> students = createStudents();
@@ -22,21 +28,73 @@ public class App {
         Task task3 = new Task("3", "Write a mobile application to store my tasks", TaskType.CODING, LocalDate.of(2015, Month.JULY, 3)).addTag("coding").addTag("mobile");
         Task task4 = new Task("4", "Write a blog on Java 8 Streams", TaskType.WRITING, LocalDate.of(2015, Month.JULY, 4)).addTag("blogging").addTag("writing").addTag("streams");
         Task task5 = new Task("5", "Read Domain Driven Design book", TaskType.READING, LocalDate.of(2015, Month.JULY, 2)).addTag("ddd").addTag("books").addTag("reading");
-        List<Task> tasks = Arrays.asList(task1, task2, task3, task4, task5);
+        List<Task> tasks = asList(task1, task2, task3, task4, task5);
         System.out.println(getFirstFiveReadingTasks(tasks));
 
         List<TaskDto> taskDtos = convertToTaskDtoList(tasks);
 
         System.out.println(findMostCommonChar("p1p1p1p"));
+
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person(1L, "Lokesh",
+                new Skill("English", 10),
+                new Skill("Kannada", 20),
+                new Skill("Hindi", 10)));
+        persons.add(new Person(2L, "Mahesh",
+                new Skill("English", 10),
+                new Skill("Kannada", 30),
+                new Skill("Hindi", 50)));
+        persons.add(new Person(3L, "Ganesh",
+                new Skill("English", 10),
+                new Skill("Kannada", 20),
+                new Skill("Hindi", 40)));
+        persons.add(new Person(4L, "Ramesh",
+                new Skill("English", 10),
+                new Skill("Kannada", 20),
+                new Skill("Hindi", 40)));
+        persons.add(new Person(5L, "Suresh",
+                new Skill("English", 10),
+                new Skill("Kannada", 40),
+                new Skill("Hindi", 40)));
+        persons.add(new Person(6L, "Gnanesh",
+                new Skill("English", 100),
+                new Skill("Kannada", 20),
+                new Skill("Hindi", 40)));
+        System.out.println(findBestMatchingPerson(persons, new Skill("English", 50), new Skill("Kannada", 50), new Skill(" Urdu", 50), new Skill("Hindi", 50)));
+    }
+
+
+    public static String findBestMatchingPerson(List<Person> persons, Skill... skills) {
+        StringBuilder result = new StringBuilder("[");
+        stream(skills).forEach(skill -> {
+            List<Person> personsWithSortedSkills = new ArrayList<>();
+            persons.stream().filter(person -> person.getSkills().stream()
+                    .anyMatch(s -> s.getTitle().equals(skill.getTitle()))).forEach(person -> {
+                person.getSkills()
+                        .sort(comparing(s -> s.getTitle().equals(skill.getTitle())));
+                personsWithSortedSkills.add(person);
+            });
+            if (personsWithSortedSkills.size() != 0) {
+                personsWithSortedSkills
+                        .sort(comparingInt(o -> o.getSkills().get(o.getSkills().size() - 1).getProficiency()));
+                result.append(skill.getTitle())
+                        .append(" : ")
+                        .append(personsWithSortedSkills.get(personsWithSortedSkills.size() - 1).getName())
+                        .append(", ");
+            } else {
+                result.append(skill.getTitle()).append(" : ").append("null, ");
+            }
+        });
+        return result.substring(0, result.length() - 2) + "]";
     }
 
     public static String findMostCommonChar(String word) {
         return word.chars()
                 .mapToObj(c -> (char) c)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .collect(groupingBy(identity(), counting()))
                 .entrySet()
                 .stream()
-                .max(Map.Entry.comparingByValue())
+                .max(comparingByValue())
                 .map(entry -> "[" + entry.getKey().toString() + "," + entry.getValue().toString() + "]")
                 .orElseThrow(IllegalArgumentException::new);
     }
@@ -54,9 +112,9 @@ public class App {
         return tasks
                 .stream()
                 .filter(t -> t.getType().equals(TaskType.READING))
-                .sorted(Comparator.comparing(Task::getCreatedOn))
+                .sorted(comparing(Task::getCreatedOn))
                 .limit(5)
-                .map(Task::getTitle).collect(Collectors.joining(","));
+                .map(Task::getTitle).collect(joining(","));
     }
 
     public static Double getAverageRatingForSubject(List<Student> students, String subject) {

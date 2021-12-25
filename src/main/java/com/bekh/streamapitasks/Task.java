@@ -16,12 +16,12 @@ public class Task {
     private Set<String> tags = new HashSet<>();
     private LocalDate dueTo;
 
-//    public Task(String id, String title, TaskType type, LocalDate createdOn){
-//        this.id=id;
-//        this.title=title;
-//        this.type = type;
-//        this.createdOn = createdOn;
-//    }
+    public Task(String id, String title, TaskType type, LocalDate createdOn){
+        this.id=id;
+        this.title=title;
+        this.type = type;
+        this.createdOn = createdOn;
+    }
 
     public Task addTag(String tag){
         tags.add(tag);
