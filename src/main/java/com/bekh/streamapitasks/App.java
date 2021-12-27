@@ -67,19 +67,18 @@ public class App {
     public static String findBestMatchingPerson(List<Person> persons, Skill... skills) {
         StringBuilder result = new StringBuilder("[");
         stream(skills).forEach(skill -> {
-            List<Person> personsWithSortedSkills = new ArrayList<>();
-            persons.stream().filter(person -> person.getSkills().stream()
-                    .anyMatch(s -> s.getTitle().equals(skill.getTitle()))).forEach(person -> {
-                person.getSkills()
-                        .sort(comparing(s -> s.getTitle().equals(skill.getTitle())));
-                personsWithSortedSkills.add(person);
-            });
-            if (personsWithSortedSkills.size() != 0) {
-                personsWithSortedSkills
+            List<Person> personsSortedBySkill = persons.stream()
+                    .filter(person -> person.getSkills().stream()
+                            .anyMatch(s -> s.getTitle().equals(skill.getTitle())))
+                    .peek(person -> person.getSkills()
+                            .sort(comparing(s -> s.getTitle().equals(skill.getTitle()))))
+                    .collect(Collectors.toList());
+            if (personsSortedBySkill.size() != 0) {
+                personsSortedBySkill
                         .sort(comparingInt(o -> o.getSkills().get(o.getSkills().size() - 1).getProficiency()));
                 result.append(skill.getTitle())
                         .append(" : ")
-                        .append(personsWithSortedSkills.get(personsWithSortedSkills.size() - 1).getName())
+                        .append(personsSortedBySkill.get(personsSortedBySkill.size() - 1).getName())
                         .append(", ");
             } else {
                 result.append(skill.getTitle()).append(" : ").append("null, ");
