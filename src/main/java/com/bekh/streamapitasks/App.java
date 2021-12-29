@@ -2,7 +2,8 @@ package com.bekh.streamapitasks;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -14,6 +15,7 @@ import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 
 public class App {
@@ -100,11 +102,13 @@ public class App {
 
     public static List<TaskDto> convertToTaskDtoList(List<Task> tasks) {
         return tasks
-                .stream().map(t -> {
-                    TaskDto taskDto = new TaskDto(t.getId(), t.getTitle(), t.getType(), t.getCreatedOn());
-                    taskDto.setTags(t.getTags());
-                    return taskDto;
-                }).collect(Collectors.toList());
+                .stream().map(App::convertToTaskDto).collect(toList());
+    }
+
+    private static TaskDto convertToTaskDto(Task task) {
+        TaskDto taskDto = new TaskDto(task.getId(), task.getTitle(), task.getType(), task.getCreatedOn());
+        taskDto.setTags(task.getTags());
+        return taskDto;
     }
 
     public static String getFirstFiveReadingTasks(List<Task> tasks) {
